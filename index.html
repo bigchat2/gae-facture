@@ -1,0 +1,236 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Facture - GARAGE AUTO EXCELLENCE</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:15px;background:#edf1f5;color:#17212b;font-family:Arial,sans-serif}
+.facture{max-width:850px;margin:auto;background:white;padding:25px;border-radius:10px}
+header{display:flex;justify-content:space-between;gap:15px;border-bottom:4px solid #123b68;padding-bottom:15px}
+h1{font-size:22px;color:#123b68;margin:0 0 8px}
+h2{font-size:18px;color:#123b68;margin-top:25px}
+.titre{font-size:23px;font-weight:bold;color:#123b68}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+label{display:block;font-size:13px;font-weight:bold;margin-bottom:5px}
+input,select,textarea{width:100%;padding:10px;border:1px solid #ccd3dc;border-radius:5px;font-size:15px}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{border:1px solid #d5dce5;padding:7px;text-align:left}
+th{background:#eaf0f7;color:#123b68;font-size:13px}
+td input{border:0;padding:5px;min-width:50px}
+button{background:#123b68;color:white;border:0;border-radius:6px;padding:11px 14px;margin-top:12px;font-weight:bold}
+.supprimer{background:#a52b2b;padding:6px 10px}
+.totaux{max-width:350px;margin:20px 0 0 auto}
+.ligne{display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #ddd}
+.grand{font-weight:bold;font-size:19px;color:#123b68}
+.signature{display:flex;justify-content:space-between;margin-top:55px;gap:20px}
+.signature div{width:45%;text-align:center;border-top:1px solid #333;padding-top:8px}
+@media(max-width:550px){
+ body{padding:5px}
+ .facture{padding:13px}
+ header{display:block}
+ .grid{grid-template-columns:1fr}
+ table{font-size:11px}
+ th,td{padding:4px}
+}
+@media print{
+ body{background:white;padding:0}
+ .facture{max-width:none;border-radius:0;padding:10mm}
+ .actions,.no-print{display:none!important}
+ input,textarea{border:0;padding:3px}
+}
+</style>
+</head>
+<body>
+
+<div class="facture">
+
+<header>
+<div>
+<h1>GARAGE AUTO EXCELLENCE</h1>
+Entretien - Réparation - Vente de pièces<br>
+Yaoundé, Cameroun
+</div>
+<div style="text-align:right">
+<div class="titre">FACTURE</div>
+<label>Numéro</label>
+<input id="numero" value="GAE-2026-0001">
+</div>
+</header>
+
+<div class="grid">
+<div>
+<label>Date</label>
+<input type="date" id="date">
+</div>
+<div>
+<label>Type de facture</label>
+<select>
+<option>Entretien</option>
+<option>Réparation</option>
+<option>Vente de pièces</option>
+<option>Diverse</option>
+</select>
+</div>
+<div>
+<label>Nom du client</label>
+<input placeholder="Nom du client">
+</div>
+<div>
+<label>Téléphone</label>
+<input placeholder="Téléphone">
+</div>
+<div>
+<label>Marque et modèle du véhicule</label>
+<input placeholder="Ex : Toyota Corolla">
+</div>
+<div>
+<label>Immatriculation</label>
+<input placeholder="Immatriculation">
+</div>
+<div>
+<label>Kilométrage</label>
+<input placeholder="Kilométrage">
+</div>
+<div>
+<label>Mode de paiement</label>
+<select>
+<option>Espèces</option>
+<option>Mobile Money</option>
+<option>Virement bancaire</option>
+</select>
+</div>
+</div>
+
+<h2>Prestations et pièces</h2>
+
+<table>
+<thead>
+<tr>
+<th>Désignation</th>
+<th>Qté</th>
+<th>Prix unitaire</th>
+<th>Total</th>
+<th class="no-print"></th>
+</tr>
+</thead>
+<tbody id="lignes"></tbody>
+</table>
+
+<div class="actions no-print">
+<button type="button" onclick="ajouterLigne()">+ Ajouter une prestation</button>
+</div>
+
+<div class="grid">
+<div>
+<label>Main-d'œuvre (FCFA)</label>
+<input type="number" id="main" value="0" min="0" oninput="calculer()">
+</div>
+<div>
+<label>Remise (FCFA)</label>
+<input type="number" id="remise" value="0" min="0" oninput="calculer()">
+</div>
+<div>
+<label>Montant payé (FCFA)</label>
+<input type="number" id="paye" value="0" min="0" oninput="calculer()">
+</div>
+<div>
+<label>Observations</label>
+<textarea rows="2" placeholder="Observations facultatives"></textarea>
+</div>
+</div>
+
+<div class="totaux">
+<div class="ligne"><span>Sous-total</span><strong id="sous">0</strong></div>
+<div class="ligne"><span>Main-d'œuvre</span><strong id="mo">0</strong></div>
+<div class="ligne"><span>Remise</span><strong id="rem">0</strong></div>
+<div class="ligne grand"><span>TOTAL</span><strong id="total">0 FCFA</strong></div>
+<div class="ligne"><span>Montant payé</span><strong id="deja">0</strong></div>
+<div class="ligne"><span>Reste à payer</span><strong id="solde">0 FCFA</strong></div>
+<div class="ligne"><span>Statut</span><strong id="statut">Non payée</strong></div>
+</div>
+
+<div class="signature">
+<div>Signature du responsable</div>
+<div>Cachet du garage</div>
+</div>
+
+<p style="text-align:center;margin-top:30px">Merci pour votre confiance.</p>
+
+<div class="actions no-print">
+<button type="button" onclick="window.print()">Imprimer / Enregistrer en PDF</button>
+<button type="button" onclick="location.reload()">Nouvelle facture</button>
+</div>
+
+</div>
+
+<script>
+function format(n){
+return Math.round(n).toLocaleString("fr-FR");
+}
+
+function ajouterLigne(){
+const tr=document.createElement("tr");
+
+tr.innerHTML=`
+<td><input type="text" placeholder="Prestation ou pièce"></td>
+<td><input type="number" min="0" value="1" step="0.01"></td>
+<td><input type="number" min="0" value="0"></td>
+<td class="montant">0</td>
+<td class="no-print">
+<button type="button" class="supprimer" onclick="this.closest('tr').remove();calculer()">X</button>
+</td>`;
+
+tr.querySelectorAll("input").forEach(input=>{
+input.addEventListener("input",calculer);
+});
+
+document.getElementById("lignes").appendChild(tr);
+calculer();
+}
+
+function valeur(id){
+return Math.max(0,Number(document.getElementById(id).value)||0);
+}
+
+function calculer(){
+let sous=0;
+
+document.querySelectorAll("#lignes tr").forEach(tr=>{
+const inputs=tr.querySelectorAll("input");
+const quantite=Math.max(0,Number(inputs[1].value)||0);
+const prix=Math.max(0,Number(inputs[2].value)||0);
+const montant=quantite*prix;
+
+tr.querySelector(".montant").textContent=format(montant);
+sous+=montant;
+});
+
+const main=valeur("main");
+const remise=Math.min(valeur("remise"),sous+main);
+const total=sous+main-remise;
+const paye=valeur("paye");
+const solde=Math.max(0,total-paye);
+
+document.getElementById("sous").textContent=format(sous);
+document.getElementById("mo").textContent=format(main);
+document.getElementById("rem").textContent=format(remise);
+document.getElementById("total").textContent=format(total)+" FCFA";
+document.getElementById("deja").textContent=format(paye);
+document.getElementById("solde").textContent=format(solde)+" FCFA";
+
+let statut="Non payée";
+if(paye>0 && solde>0) statut="Partiellement payée";
+if(total>0 && solde===0) statut="Payée";
+
+document.getElementById("statut").textContent=statut;
+}
+
+document.getElementById("date").value=new Date().toISOString().slice(0,10);
+ajouterLigne();
+</script>
+
+</body>
+</html>
